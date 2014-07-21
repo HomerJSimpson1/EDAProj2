@@ -61,17 +61,18 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
         }
     }
 
-  ## ## Examine the files
-  ## ## Top level directory for the unzipped files is now unzipdst + "UCI HAR Dataset"
-  ## filelst <- list.files(paste(unzipdst, "/UCI HAR Dataset", sep=""))
-  ## filelst
+  ## Examine the files
+  ## Top level directory for the unzipped files is now unzipdst + "UCI HAR Dataset"
+  #filelst <- list.files(paste(unzipdst, "/UCI HAR Dataset", sep=""))
+  filelst <- list.files(unzipdst)
+  filelst
 
-  ## ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
-  ## ## using the readRDS function (and written using the saveRDS function).
-  ## NEI <- readRDS("summarySCC_PM25.rds")
-  ## SCC <- readRDS("Source_Classification_Code.rds")
-  ## print(str(NEI))
-  ## print(str(SCC))  
+  ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
+  ## using the readRDS function (and written using the saveRDS function).
+  NEI <- readRDS(paste(unzipdst,"/summarySCC_PM25.rds", sep=""))
+  SCC <- readRDS(paste(unzipdst,"/Source_Classification_Code.rds", sep=""))
+  print(str(NEI))
+  print(str(SCC))  
 
 }
 
