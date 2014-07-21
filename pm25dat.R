@@ -1,11 +1,26 @@
-pm25dat <- function(strFilePath, DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
+pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
   ## 
 
+  ## Some basic path variables
+  destdir <- strFilePath
+  dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
+  unzipdst <- paste(destdir, "/unzipped", sep="")
 
-  ## Read the data into R.
-  readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
+  ## ## Read the data into R.
+  ## ##readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
+  
+  ## Get the data
+  filelst <- readdata(destdir, dstfile, unzipdst, DOWNLD_UNZIP, USE_INET2)
+
+  ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
+  ## using the readRDS function (and written using the saveRDS function).
+  NEI <- readRDS(paste(unzipdst,filelst[[2]], sep=""))
+  SCC <- readRDS(paste(unzipdst,filelst[[1]], sep=""))
+  print(str(NEI))
+  print(str(SCC))  
+  
 
   ## Use merge() to join the two data frames.
 
@@ -16,7 +31,8 @@ pm25dat <- function(strFilePath, DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
 
 
 
-readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
+readdata <- function(destdir, dstfile, unzipdst, DOWNLD_UNZIP, USE_INET2) {
+##readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {    
   ## Flag to determine if I should download and unzip the data or not.
   #DOWNLD_UNZIP <- FALSE
   #DOWNLD_UNZIP <- TRUE
@@ -33,9 +49,12 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
   ##   }
 
   #destdir <- "C:/Temp/data"
-  destdir <- getwd()
-  dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
-  unzipdst <- paste(destdir, "/unzipped", sep="")
+  #destdir <- getwd()
+  ## destdir <- strFilePath 
+  ## dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
+  ## unzipdst <- paste(destdir, "/unzipped", sep="")
+
+  #print(destdir)
   
   if (DOWNLD_UNZIP)
     {
@@ -66,14 +85,18 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
   #filelst <- list.files(paste(unzipdst, "/UCI HAR Dataset", sep=""))
   filelst <- list.files(unzipdst)
   filelst
+  print(filelst[[1]])
+  print(filelst[[2]])
+  
 
-  ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
-  ## using the readRDS function (and written using the saveRDS function).
-  NEI <- readRDS(paste(unzipdst,"/summarySCC_PM25.rds", sep=""))
-  SCC <- readRDS(paste(unzipdst,"/Source_Classification_Code.rds", sep=""))
-  print(str(NEI))
-  print(str(SCC))  
+  ## ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
+  ## ## using the readRDS function (and written using the saveRDS function).
+  ## NEI <- readRDS(paste(unzipdst,"/summarySCC_PM25.rds", sep=""))
+  ## SCC <- readRDS(paste(unzipdst,"/Source_Classification_Code.rds", sep=""))
+  ## print(str(NEI))
+  ## print(str(SCC))  
 
+  return(filelst)
 }
 
 
