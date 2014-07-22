@@ -1,22 +1,45 @@
 pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
-  ## DOWNLD_UNZIP = A Flag to determine if I should download and unzip the data or not. Default value = TRUE.
-  ## USE_INET2 = A Flag to determine if I need to use setInternet2(use=TRUE).  Default value = FALSE.
   ## Requires the following packages:
   ##          data.table  (data tables can be way faster, and seem to be very much faster for merging)
   ##          
   ##          
 
     
-  ## Get the data and merge into one data table.
+  ## #require(data.table)  ## Need to add a function that installs the data.table package if it's not already installed!
+  ## checkpkg(data.table)  ## Need to add a function that installs the data.table package if it's not already installed!  
+
+  ## ## Some basic path variables
+  ## destdir <- strFilePath
+  ## dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
+  ## unzipdst <- paste(destdir, "/unzipped", sep="")
+
+  ## ## ## Read the data into R.
+  ## ## ##readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
+  
+  ## ## Get the data
+  ## filelst <- readdata(destdir, dstfile, unzipdst, DOWNLD_UNZIP, USE_INET2)
+
+  ## ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
+  ## ## using the readRDS function (and written using the saveRDS function).
+  ## ## NEI <- readRDS(paste(unzipdst,"/",filelst[[2]], sep=""))
+  ## ## SCC <- readRDS(paste(unzipdst,"/",filelst[[1]], sep=""))
+  ## NEI <- as.data.table(readRDS(paste(unzipdst,"/",filelst[[2]], sep="")))
+  ## SCC <- as.data.table(readRDS(paste(unzipdst,"/",filelst[[1]], sep="")))
+
+  ## print(str(NEI))
+  ## print(str(SCC))  
+  
+
+  ## ## Use merge() to join the two data frames.
+  ## merged <- merge(NEI, SCC, by="SCC")
+
+
+  
+  ## Get the data
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
 
-  ## Group the data by year
-  
-
-  ## Plot the data using the base graphics system.
-  
   
   ## Return the merged data frames?
   return(merged)
@@ -26,15 +49,37 @@ pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE)
 
 
 readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
+#########readdata <- function(destdir, dstfile, unzipdst, DOWNLD_UNZIP, USE_INET2) {    
+  ## Flag to determine if I should download and unzip the data or not.
+  #DOWNLD_UNZIP <- FALSE
+  #DOWNLD_UNZIP <- TRUE
+
+  ## Flag to determine if I need to use setInternet2(use=TRUE)
+  #USE_INET2 <- FALSE
+  #USE_INET2 <- TRUE
+
   ## Set the values of some directories and filenames that will be used throughout.
+  #destdir <- "C:/Users/petersj/My Documents/data"
+  ## if (!file.exists("C:/temp"))
+  ##   {
+  ##     dir.create("C:/temp")
+  ##   }
 
-  ## Check to see that the data.table package has been installed and loaded.  If not, then install and load it.
-  checkpkg("data.table")
+  #destdir <- "C:/Temp/data"
+  #destdir <- getwd()
+  ## destdir <- strFilePath 
+  ## dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
+  ## unzipdst <- paste(destdir, "/unzipped", sep="")
 
-  ## Some basic directory variables
+  #print(destdir)
+
+  #require(data.table)  ## Need to add a function that installs the data.table package if it's not already installed!
+  checkpkg("data.table")  ## Need to add a function that installs the data.table package if it's not already installed!
+
+  ## Some basic path variables
   destdir <- strFilePath
-  dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")  
-  unzipdst <- paste(destdir, "/unzipped", sep="")
+  dstfile <- paste(destdir, "/exdata_data_NEI_data.zip", sep="")
+  unzipdst <- paste(destdir, "/unzipped", sep="")  
   
   if (DOWNLD_UNZIP)
     {
@@ -61,23 +106,38 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
     }
 
   ## Examine the files
-  ## Top level directory for the unzipped files is now unzipdst
+  ## Top level directory for the unzipped files is now unzipdst + "UCI HAR Dataset"
+  #filelst <- list.files(paste(unzipdst, "/UCI HAR Dataset", sep=""))
   filelst <- list.files(unzipdst)
   filelst
   print(filelst[[1]])
   print(filelst[[2]])
 
+
+  ## ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
+  ## ## using the readRDS function (and written using the saveRDS function).
+  ## NEI <- readRDS(paste(unzipdst,"/summarySCC_PM25.rds", sep=""))
+  ## SCC <- readRDS(paste(unzipdst,"/Source_Classification_Code.rds", sep=""))
+  ## print(str(NEI))
+  ## print(str(SCC))
+
+
   ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
   ## using the readRDS function (and written using the saveRDS function).
+  ## NEI <- readRDS(paste(unzipdst,"/",filelst[[2]], sep=""))
+  ## SCC <- readRDS(paste(unzipdst,"/",filelst[[1]], sep=""))
   NEI <- as.data.table(readRDS(paste(unzipdst,"/",filelst[[2]], sep="")))
   SCC <- as.data.table(readRDS(paste(unzipdst,"/",filelst[[1]], sep="")))
 
-  ##print(str(NEI))
-  ##print(str(SCC))  
+  print(str(NEI))
+  print(str(SCC))  
+  
 
   ## Use merge() to join the two data frames.
   merged <- merge(NEI, SCC, by="SCC")
 
+  
+  ##return(filelst)
   return(merged)  
 }
 
@@ -85,7 +145,7 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
 datadownld <- function(fileURL, destdir, dstfile) {
   ## Download the data
   ## First, set the URL value.
-  ## e.g. fileURL <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+  ## e.g. fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 
   print(destdir)
   print(dstfile)
@@ -99,6 +159,8 @@ datadownld <- function(fileURL, destdir, dstfile) {
 
   ## Call download.file().  If the URL is secure (https), then on some systems you need to specify method="curl".
   ## Don't use method="curl" on Windows when setInternet2 is TRUE.
+  # download.file(fileURL, destfile = dstfile, method="curl")
+
   if(substr(fileURL, 1, 5) == "https")
     download.file(fileURL, destfile = dstfile, method="curl")
   else if(substr(fileURL, 1, 5) == "http:")
@@ -135,6 +197,8 @@ unzipthedata <- function(datadir, datafile) {
   ## Unzip the file
   unzip(datafile, exdir=unzipdst)  
 }
+
+
 
 
 
