@@ -16,8 +16,8 @@ pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE)
 
   ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
   ## using the readRDS function (and written using the saveRDS function).
-  NEI <- readRDS(paste(unzipdst,filelst[[2]], sep=""))
-  SCC <- readRDS(paste(unzipdst,filelst[[1]], sep=""))
+  NEI <- readRDS(paste(unzipdst,"/",filelst[[2]], sep=""))
+  SCC <- readRDS(paste(unzipdst,"/",filelst[[1]], sep=""))
   print(str(NEI))
   print(str(SCC))  
   
