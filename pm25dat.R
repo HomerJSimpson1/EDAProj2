@@ -23,10 +23,11 @@ pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE)
   
 
   ## Use merge() to join the two data frames.
-
+  merged <- merge(NEI, SCC, by="SCC")
 
 
   ## Return the merged data frames?
+  return(merged)
 }
 
 
