@@ -1,79 +1,51 @@
-pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
+plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
-  ## DOWNLD_UNZIP = A Flag to determine if I should download and unzip the data or not. Default value = TRUE.
-  ## USE_INET2 = A Flag to determine if I need to use setInternet2(use=TRUE).  Default value = FALSE.
-  ## Requires the following packages:
+  ## Filename: plot3.R
+  ##
+  ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not (useful especially while testing by setting = FALSE). Default value = TRUE.
+  ## USE_INET2 = A flag to determine if I need to use setInternet2(use=TRUE).  Default value = FALSE.
+  ##  
+  ## The following code requires the following package(s):
   ##          data.table  (data tables can be way faster, and seem to be very much faster for merging)
-  ##          
+  ##          ggplot2
   ##          
 
-    
   ## Get the data and merge into one data table.
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
 
-  ## Group the data by year
-#  checkpkg("plyr")
-  ## Use the ddply function from the plyr package to apply the mean function to each of the columns
-  ## (except for the subjectId and activityLabel columns)
-#  yearsums <- ddply(merged, "year", function(x) sapply(merged$Emissions, sum))
-  yearsums <- by(merged$Emissions, merged$year, sum)
-  
-  
-  ## Select years 1999, 2002, 2005, and 2008.  Actually, no need to select by year, as these are the only years
-  ## included in the data.
+  ## Subset the data to include only data for Baltimore City, MD.
+  mergedBalt <- merged[merged$fips == 24510,]
+
+
+  ## Construct a plot as a test.  Not the final plot.
+  qplot(year, Emissions, data=mrg2[mrg2$fips=="24510",], color=type)
+
+
+
+
 
   
+  ## ## Group the data by year
+  ## yearsums <- by(mergedBalt$Emissions, mergedBalt$year, sum)
 
-  ## Plot the data using the base graphics system.
-#  plot(names(yearsums), logb(yearsums, 1e6), type="l", xlab="Year", ylab=expression('log'[1e6]' of PM'[2.5]),
-#       main=expression('Total PM'[2.5]' From All Sources'))    
-#  plot(names(yearsums), logb(yearsums, 1e6), type="l", xlab="Year", ylab=expression('log of PM'[2.5]), 
-#       main=expression('Total PM From All Sources'))
+  ## ## Plot the data, using the png device to save the plot to a PNG file
+  ## png("plot2.png")
+  ## plot(names(yearsums), yearsums, xlab="Year", ylab=expression('PM'[2.5]*' (tons)'),
+  ##      main=expression('Total PM'[2.5]*' (tons) From All Sources for Baltimore City, MD'), xlim=c(1998, 2009), ylim=c(1800, 3400))
 
-  png("plot1.png")  
-  ## Scatterplot with points
-##   ## log10 version
-##   plot(names(yearsums), log10(yearsums), xlab="Year", ylab=expression('log'[10]*' of PM'[2.5]),
-##        main=expression('Total PM'[2.5]*' From All Sources'))
-
-  ## Regular value version
-  plot(names(yearsums), yearsums, xlab="Year", ylab=expression('PM'[2.5]*' (tons)'),
-       main=expression('Total PM'[2.5]*' (tons) From All Sources'), xlim=c(1998, 2009))
-##  ## I think, in the end, it looks better without the line connecting the points.  So, omit it.
-##  lines(names(yearsums), yearsums)
-  ## Annotate the points with their values.
-  text(as.numeric(names(yearsums)), yearsums + 100000, paste(round(as.numeric(names(yearsums)), 2), round(yearsums, 2), sep=", "), cex=0.8)
+  ## ## Annotate the points with their values.
+  ## text(as.numeric(names(yearsums)), yearsums + 60, paste(round(as.numeric(names(yearsums)), 2), round(yearsums, 2), sep=", "), cex=0.8)
   
-  
-##   ## Line plot
-##   plot(names(yearsums), log10(yearsums), type="l", xlab="Year", ylab=expression('log'[10]*' of PM'[2.5]),
-##        main=expression('Total PM'[2.5]*' From All Sources'))
-
-##   ## Line plot
-##   plot(names(yearsums), yearsums, type="l", xlab="Year", ylab=expression('PM'[2.5]),
-##        main=expression('Total PM'[2.5]*' From All Sources'))
-
-  
-  ## Fit a regression line to the data and add it to the plot.
-  abline(lm(yearsums~as.numeric(names(yearsums))), lty=2, lwd=3, col="red")
+  ## ## Fit a regression line to the data and add it to the plot.
+  ## abline(lm(yearsums~as.numeric(names(yearsums))), lty=2, lwd=3, col="red")
 
   ## ## Add a legend to the plot.
-  ## legend("topright", c("Line Connecting The Points", "Regression Line"),lty=c(1,2), col=c("black", "red"),lwd=c(1, 3))
-  legend("topright", "Regression Line",lty=2, col="red",lwd=3)  
+  ## legend("topright", "Regression Line",lty=2, col="red",lwd=3)  
 
-  ## Shut down the png graphics device
-  dev.off()
+  ## ## Shut down the png graphics device
+  ## dev.off()
 
-  
-  #plot(names(yearsums), logb(yearsums, 1e6), type="l", xlab="Year", ylab=expression('log'[1e6]*' of PM'[2.5]),
-  #     main=expression('Total PM'[2.5]*' From All Sources'))    
-  #plot(names(yearsums), yearsums, type="l")
-  ## Regression line.  This yields an error - only uses 2 of 4 points?   Just skip it.
-  #fit <- lm(yearsums ~ names(yearsums))
-  #abline(fit)
-  
-  ## Return the merged data frames?
   return(yearsums)
 }
 
