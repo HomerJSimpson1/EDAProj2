@@ -13,13 +13,59 @@ pm25dat <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE)
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
 
   ## Group the data by year
+#  checkpkg("plyr")
+  ## Use the ddply function from the plyr package to apply the mean function to each of the columns
+  ## (except for the subjectId and activityLabel columns)
+#  yearsums <- ddply(merged, "year", function(x) sapply(merged$Emissions, sum))
+  yearsums <- by(merged$Emissions, merged$year, sum)
+  
+  
+  ## Select years 1999, 2002, 2005, and 2008.  Actually, no need to select by year, as these are the only years
+  ## included in the data.
+
   
 
   ## Plot the data using the base graphics system.
+#  plot(names(sums), logb(sums, 1e6), type="l", xlab="Year", ylab=expression('log'[1e6]' of PM'[2.5]),
+#       main=expression('Total PM'[2.5]' From All Sources'))    
+#  plot(names(sums), logb(sums, 1e6), type="l", xlab="Year", ylab=expression('log of PM'[2.5]), 
+#       main=expression('Total PM From All Sources'))
+
+  png("plot1.png")  
+  ## Scatterplot with points
+##   ## log10 version
+##   plot(names(sums), log10(sums), xlab="Year", ylab=expression('log'[10]*' of PM'[2.5]),
+##        main=expression('Total PM'[2.5]*' From All Sources'))
+
+  ## Regular value version
+  plot(names(sums), sums, xlab="Year", ylab=expression('PM'[2.5]),
+       main=expression('Total PM'[2.5]*' From All Sources'))
+  lines(names(sums), sums)
+
   
+##   ## Line plot
+##   plot(names(sums), log10(sums), type="l", xlab="Year", ylab=expression('log'[10]*' of PM'[2.5]),
+##        main=expression('Total PM'[2.5]*' From All Sources'))
+
+##   ## Line plot
+##   plot(names(sums), sums, type="l", xlab="Year", ylab=expression('PM'[2.5]),
+##        main=expression('Total PM'[2.5]*' From All Sources'))
+
+  
+  ## The regression line fails to appear on the plot.  It does give a warning that only 2 of 4 points are use.
+  #abline(lm(names(sums)~sums))
+  dev.off()
+
+  
+  #plot(names(sums), logb(sums, 1e6), type="l", xlab="Year", ylab=expression('log'[1e6]*' of PM'[2.5]),
+  #     main=expression('Total PM'[2.5]*' From All Sources'))    
+  #plot(names(yearsums), yearsums, type="l")
+  ## Regression line.  This yields an error - only uses 2 of 4 points?   Just skip it.
+  #fit <- lm(yearsums ~ names(yearsums))
+  #abline(fit)
   
   ## Return the merged data frames?
-  return(merged)
+  return(yearsums)
 }
 
 
