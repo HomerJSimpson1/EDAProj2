@@ -18,12 +18,26 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   mergedBalt <- merged[merged$fips == 24510,]
 
 
-  ## Construct a plot as a test.  Not the final plot.
-  qplot(year, Emissions, data=mrg2[mrg2$fips=="24510",], color=type)
+  ## Construct some plots as tests.  Not the final plot.
+  #qplot(year, Emissions, data=merged[merged$fips=="24510",], color=type)
+  qplot(year, Emissions, data=mergedBalt, color=type)  
+  #qplot(year, Emissions, data=merged[merged$fips=="24510",], facets=type~year)
+  qplot(year, Emissions, data=mergedBalt, facets=type~year)  
 
+  g <- ggplot(data=mergedBalt, aes(year, Emissions))
+  #g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type ~ year) ## stats="sum"
+  g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_wrap(type ~ year, nrow=4, ncol=4) ## stats="sum"
+  
+  qpB <- qplot(year, Emissions, data=mrg2[mrg2$fips=="24510",])  
+  qpB + stat_summary(fun.y = "sum", color="red", ymin = 1500, ymax = 3400)
 
+  ## Might need to use ddply() from the plyr package to group the data by year and type.  Then use ggplot2 to create the plot?
 
+  ## Check to see if the plyr package is installed, as it is required for the ddply() function.
+  checkpkg("plyr")  
+##  tidymeans <- ddply(mergemnsd, c("subjectId", "activityLabel"), function(x) sapply(x[4:ncol(x)], mean))
 
+  
 
   
   ## ## Group the data by year
