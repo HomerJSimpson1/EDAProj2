@@ -3,7 +3,8 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Project 2
   ## Filename: plot3.R
   ##
-  ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not (useful especially while testing by setting = FALSE). Default value = TRUE.
+  ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not
+  ##               (useful especially while testing by setting = FALSE). Default value = TRUE.
   ## USE_INET2 = A flag to determine if I need to use setInternet2(use=TRUE).  Default value = FALSE.
   ##  
   ## The following code requires the following package(s):
@@ -18,27 +19,42 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   mergedBalt <- merged[merged$fips == 24510,]
 
 
+  checkpkg("ggplot2")
   ## Construct some plots as tests.  Not the final plot.
-  #qplot(year, Emissions, data=merged[merged$fips=="24510",], color=type)
-  qplot(year, Emissions, data=mergedBalt, color=type)  
-  #qplot(year, Emissions, data=merged[merged$fips=="24510",], facets=type~year)
-  qplot(year, Emissions, data=mergedBalt, facets=type~year)  
+  ##qplot(year, Emissions, data=merged[merged$fips=="24510",], color=type)
+  #print(qplot(year, Emissions, data=mergedBalt, color=type))
+  ##qplot(year, Emissions, data=merged[merged$fips=="24510",], facets=type~year)
+  #print(qplot(year, Emissions, data=mergedBalt, facets=type~year))
 
-  g <- ggplot(data=mergedBalt, aes(year, Emissions))
-  #g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type ~ year) ## stats="sum"
-  g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_wrap(type ~ year, nrow=4, ncol=4) ## stats="sum"
+##   g <- ggplot(data=mergedBalt, aes(year, Emissions))
+##   #g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type ~ year) ## stats="sum"
+##   g1 <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_wrap(type ~ year, nrow=4, ncol=4)
+##   print(g1)
+## ##  qpB <- qplot(year, Emissions, data=mrg2[mrg2$fips=="24510",])
+##   qpB <- qplot(year, Emissions, data=mergedBalt)    
+##   print(qpB + stat_summary(fun.y = "sum", color="red", ymin = 1500, ymax = 3400))
+
+
   
-  qpB <- qplot(year, Emissions, data=mrg2[mrg2$fips=="24510",])  
-  qpB + stat_summary(fun.y = "sum", color="red", ymin = 1500, ymax = 3400)
-
-  ## Might need to use ddply() from the plyr package to group the data by year and type.  Then use ggplot2 to create the plot?
-
+  ## Might need to use ddply() from the plyr package to group the data by year and type.
+  ## Then use ggplot2 to create the plot.
   ## Check to see if the plyr package is installed, as it is required for the ddply() function.
   checkpkg("plyr")  
-##  tidymeans <- ddply(mergemnsd, c("subjectId", "activityLabel"), function(x) sapply(x[4:ncol(x)], mean))
+##  tidymeans <- ddply(mergedBalt, c("type", "year"), function(x) sapply(x[4:ncol(x)], mean))
 
-  
+  df <- as.data.frame(mergedBalt)
+  ##mrgGrpBlt <- ddply(mergedBalt, c("type", "year"), sum)
+  ##mrgGrpBlt <- ddply(df, c("type", "year"), sum)
+  mrgGrpBlt <- ddply(df, c("type", "year"), function(x) sum(x[,4]))
 
+
+  ## Things work to here, but can't get a regression line on the plot.  :-(
+  print(qplot(year, V1, data=mrgGrpBlt, facets=type~year))
+  ## Trying to get a regression line, but this isn't working.  :-(
+  print(qplot(year, V1, data=groupsums, facets=type~year, geom=c("point","smooth"), method="lm"))
+  g <- ggplot(data=groupsums, aes(year, V1))
+  g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type~year)
+  print(g)
   
   ## ## Group the data by year
   ## yearsums <- by(mergedBalt$Emissions, mergedBalt$year, sum)
@@ -60,7 +76,8 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## ## Shut down the png graphics device
   ## dev.off()
 
-  return(yearsums)
+  #return(yearsums)
+  return(mrgGrpBlt)  
 }
 
 
