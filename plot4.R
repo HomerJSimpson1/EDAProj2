@@ -1,7 +1,7 @@
-plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
+plot4 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
-  ## Filename: plot3.R
+  ## Filename: plot4.R
   ##
   ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not
   ##               (useful especially while testing by setting = FALSE). Default value = TRUE.
@@ -15,27 +15,50 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Get the data and merge into one data table.
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
 
-  ## Subset the data to include only data for Baltimore City, MD.
-  mergedBalt <- merged[merged$fips == 24510,]
+  ## Subset the data to include only emissions "from coal combustion-related sources"
+  ## Not sure which column and criteria to use?  I think the answer is to use Short.Name
+  coals <- mrg2[grep("coal", mrg2$EI.Sector, ignore.case=TRUE),]  ## Yields 28480 rows
+  x <- as.character(coals$EI.Sector)
+  levels(as.factor(x))                                       ## Yields 3 levels
 
-  ## Check to see if the ggplot2 and plyr packages are installed, as they are required for several functions
-  ## e.g. ggplot(), qplot, and ddply()
-  checkpkg("ggplot2")
-  checkpkg("plyr")  
+  x <- as.character(coals$Short.Name)
+  levels(as.factor(x))                                       ## Yields 80 levels
+  
+  coals1 <- mrg2[grep("coal", mrg2$Short.Name, ignore.case=TRUE),]   ## Yields 53400 rows
+  x <- as.character(coals1$Short.Name)
+  levels(as.factor(x))                                               ## Yields 165 levels
 
-  ## ddply() requires a data frame
-  df <- as.data.frame(mergedBalt)
-  mrgGrpBlt <- ddply(df, c("type", "year"), function(x) sum(x[,4]))
+  x <- as.character(coals1$EI.Sector)
+  levels(as.factor(x))                                       ## Yields 13 levels    
 
-  ## Generate the plot.
-  png("plot3.png", width=700, height=700)
-  g1 <- ggplot(data=mrgGrpBlt, aes(year, V1))
-  g1 <- g1 + geom_point() + geom_smooth(method="lm", size=2, linetype=3, se=FALSE) + facet_grid(.~type) +
-      labs(x="Year", y=expression('PM'[2.5]*' (tons)'), title=expression('Total PM'[2.5]*' (tons) By Source Type for Baltimore City, MD'))
-  print(g1)
-  dev.off()
 
-  return(mrgGrpBlt)
+
+
+
+
+
+  
+  ## ## Subset the data to include only data for Baltimore City, MD.
+  ## mergedBalt <- merged[merged$fips == 24510,]
+
+  ## ## Check to see if the ggplot2 and plyr packages are installed, as they are required for several functions
+  ## ## e.g. ggplot(), qplot, and ddply()
+  ## checkpkg("ggplot2")
+  ## checkpkg("plyr")  
+
+  ## ## ddply() requires a data frame
+  ## df <- as.data.frame(mergedBalt)
+  ## mrgGrpBlt <- ddply(df, c("type", "year"), function(x) sum(x[,4]))
+
+  ## ## Generate the plot.
+  ## png("plot3.png", width=700, height=700)
+  ## g1 <- ggplot(data=mrgGrpBlt, aes(year, V1))
+  ## g1 <- g1 + geom_point() + geom_smooth(method="lm", size=2, linetype=3, se=FALSE) + facet_grid(.~type) +
+  ##     labs(x="Year", y=expression('PM'[2.5]*' (tons)'), title=expression('Total PM'[2.5]*' (tons) By Source Type for Baltimore City, MD'))
+  ## print(g1)
+  ## dev.off()
+
+  return(coals1)
 }
 
 
