@@ -48,13 +48,24 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   mrgGrpBlt <- ddply(df, c("type", "year"), function(x) sum(x[,4]))
 
 
-  ## Things work to here, but can't get a regression line on the plot.  :-(
-  print(qplot(year, V1, data=mrgGrpBlt, facets=type~year))
-  ## Trying to get a regression line, but this isn't working.  :-(
-  print(qplot(year, V1, data=groupsums, facets=type~year, geom=c("point","smooth"), method="lm"))
-  g <- ggplot(data=groupsums, aes(year, V1))
-  g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type~year)
-  print(g)
+##   ## Things work to here, but can't get a regression line on the plot.  :-(
+##   print(qplot(year, V1, data=mrgGrpBlt, facets=type~year))
+##   ## Trying to get a regression line, but this isn't working.  :-(
+##   print(qplot(year, V1, data=groupsums, facets=type~year, geom=c("point","smooth"), method="lm"))
+##   g <- ggplot(data=groupsums, aes(year, V1))
+##   g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(type~year)
+##   print(g)
+
+
+  ## Okay, try the following.  I think this will work.
+  png("plot3.png", width=700, height=700)
+  g1 <- ggplot(data=mrgGrpBlt, aes(year, V1))
+  ##g1 + geom_point() + geom_smooth(method="lm", size=2, linetype=3, se=FALSE) + facet_grid(.~type)
+  g1 <- g1 + geom_point() + geom_smooth(method="lm", size=2, linetype=3) + facet_grid(.~type)    
+  print(g1)
+  dev.off()
+
+  
   
   ## ## Group the data by year
   ## yearsums <- by(mergedBalt$Emissions, mergedBalt$year, sum)
@@ -77,7 +88,7 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## dev.off()
 
   #return(yearsums)
-  return(mrgGrpBlt)  
+  return(mrgGrpBlt)
 }
 
 
