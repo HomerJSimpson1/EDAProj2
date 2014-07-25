@@ -1,7 +1,7 @@
-plot4 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
+plot5 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
-  ## Filename: plot4.R
+  ## Filename: plot5.R
   ##
   ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not
   ##               (useful especially while testing by setting = FALSE). Default value = TRUE.
@@ -16,8 +16,7 @@ plot4 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
 
   ## Subset the data to get only coal combustion-related sources
-  ## Select all rows where "coal" is in either the Short.Name or in the EI.Sector fields  
-  coals1 <- merged[grepl("coal", merged$Short.Name, ignore.case=TRUE) | grepl("coal", merged$EI.Sector, ignore.case=TRUE),]
+  coals1 <- merged[grep("coal", merged$Short.Name, ignore.case=TRUE),]
   coalsum <- by(coals1$Emissions, coals1$year, sum)
   df <- as.data.frame(cbind(as.numeric(names(coalsum)), as.vector(coalsum)))
   names(df) <- c("Year","Emissions")
@@ -26,7 +25,7 @@ plot4 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   checkpkg("ggplot2")
   
   ## Generate the plot.
-  png("plot4.png", width=700, height=700)  
+  png("plot5.png", width=700, height=700)  
   g <- ggplot(data=df, aes(Year, Emissions))
   g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) +
     labs(x="Year", y=expression('PM'[2.5]*' (tons)'),
