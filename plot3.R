@@ -10,7 +10,7 @@ plot3 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## The following code requires the following package(s):
   ##          data.table  (data tables can be way faster, and seem to be very much faster for merging)
   ##          ggplot2
-  ##          
+  ##          plyr
 
   ## Get the data and merge into one data table.
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
