@@ -31,29 +31,31 @@ plot6 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   mvsor <- merged[merged$type=="ON-ROAD",]
 
   ## Select only those records for Baltimore City (i.e. where fips == "24510")
-  mvbc <- mvsor[mvsor$fips=="24510",]
+  mvbcla <- mvsor[mvsor$fips=="24510" | mvsor$fips=="06037",]
 
-  print(str(mvbc))
+  ## Need ddply()
+  checkpkg("plyr")  
 
-  ## Sum for each year
-  mvbcsum <- by(mvbc$Emissions, mvbc$year, sum)
-  df <- as.data.frame(cbind(as.numeric(names(mvbcsum)), as.vector(mvbcsum)))
-  names(df) <- c("Year","Emissions")
+  ## ddply() requires a data frame
+  df <- as.data.frame(mvbcla)
+  mrgGrpBCLA <- ddply(df, c("fips", "year"), function(x) sum(x[,4]))
+  names(mrgGrpBCLA) <- c("FIPS","Year","Emissions")
 
   ## Check to see if the ggplot2 package is installed and loaded.
   checkpkg("ggplot2")
   
   ## Generate the plot.
   png("plot6.png", width=700, height=700)
-  g <- ggplot(data=df, aes(Year, Emissions, label=round(Emissions, 2)))
+  g <- ggplot(data=mrgGrpBCLA, aes(Year, Emissions, label=round(Emissions, 2)))
+  g <- g + facet_grid(FIPS ~ ., scales="free_y")  
   g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) +
     labs(x="Year", y=expression('PM'[2.5]*' (tons)'),
-         title=expression('Total PM'[2.5]*' (tons) from Motor Vehicle Sources'))
-  g <- g + geom_text(size=5, vjust=0)
+         title=expression('Total PM'[2.5]*' (tons) from Motor Vehicle Sources for Baltimore City and Los Angeles County'))
+  g <- g + geom_text(size=3.5, vjust=0)
   print(g)
   dev.off()
 
-  return(df)
+  return(mrgGrpBCLA)
 }
 
 
@@ -98,8 +100,6 @@ readdata <- function(strFilePath, DOWNLD_UNZIP, USE_INET2) {
   ## Top level directory for the unzipped files is now unzipdst
   filelst <- list.files(unzipdst)
   filelst
-  print(filelst[[1]])
-  print(filelst[[2]])
 
   ## Read the files into R (there are 2 files).  The files are stored as .rds files, which are read into R
   ## using the readRDS function (and written using the saveRDS function).
