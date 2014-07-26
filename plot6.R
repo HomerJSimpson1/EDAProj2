@@ -1,7 +1,7 @@
-plot5 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
+plot6 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## Exploratory Data Analysis Coursera Class
   ## Project 2
-  ## Filename: plot5.R
+  ## Filename: plot6.R
   ##
   ## DOWNLD_UNZIP = A flag to determine if I should download and unzip the data or not
   ##               (useful especially while testing by setting = FALSE). Default value = TRUE.
@@ -22,7 +22,7 @@ plot5 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   ## N.B. For subsetting this data, I chose to use the type field. I selected records where type == "ON-ROAD" because, after reviewing the
   ## short names and EI.Sectors for this type (as well as the other types), I decided the ON-ROAD type selected sources which intuitively
   ## fit my notion of what was intended by "Motor Vehicle." The data was then further subsetted to include only those records where
-  ## fips=="24510" (i.e. Baltimore City) as per the instructions.    
+  ## fips=="24510" (i.e. Baltimore City) and fips=="06037" (i.e. Los Angeles County) as per the instructions.    
 
   ## Get the data and merge into one data table.
   merged <- readdata(strFilePath, DOWNLD_UNZIP, USE_INET2)
@@ -44,7 +44,7 @@ plot5 <- function(strFilePath=getwd(), DOWNLD_UNZIP = TRUE, USE_INET2 = FALSE) {
   checkpkg("ggplot2")
   
   ## Generate the plot.
-  png("plot5.png", width=700, height=700)  
+  png("plot6.png", width=700, height=700)
   g <- ggplot(data=df, aes(Year, Emissions, label=round(Emissions, 2)))
   g <- g + geom_point() + geom_smooth(method="lm", size=2, linetype=3) +
     labs(x="Year", y=expression('PM'[2.5]*' (tons)'),
